@@ -30,14 +30,11 @@ class DbHelper extends SQLiteOpenHelper {
                 + "UNIQUE (" + Quote.COLUMN_SYMBOL + ") ON CONFLICT REPLACE);";
 
         db.execSQL(builder);
-
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
         db.execSQL(" DROP TABLE IF EXISTS " + Quote.TABLE_NAME);
-
         onCreate(db);
     }
 }
