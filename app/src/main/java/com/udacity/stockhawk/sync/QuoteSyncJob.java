@@ -8,7 +8,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.util.Log;
+import android.os.Handler;
+import android.os.Looper;
+import android.widget.Toast;
 
 import com.udacity.stockhawk.data.Contract;
 import com.udacity.stockhawk.data.PrefUtils;
@@ -41,7 +43,7 @@ public final class QuoteSyncJob {
     private QuoteSyncJob() {
     }
 
-    static void getQuotes(Context context) {
+    static void getQuotes(final Context context) {
 
         Timber.d("Running sync job");
 
@@ -72,9 +74,29 @@ public final class QuoteSyncJob {
             while (iterator.hasNext()) {
                 String symbol = iterator.next();
 
-
-                Stock stock = quotes.get(symbol);
+                final Stock stock = quotes.get(symbol);
                 StockQuote quote = stock.getQuote();
+
+                if (stock.getQuote().getPrice() == null) {
+                    new Handler(Looper.getMainLooper()).post(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    // THIS IS MAIN THREAD!
+                                    Toast.makeText(
+                                            context,
+                                            "Invalid stock (" + stock.getSymbol() + ") entered.",
+                                            Toast.LENGTH_LONG).show();
+                                }
+                            }
+                    );
+                    Timber.d("Stock (%s) with Quote (%s) is invalid!",
+                            stock.toString(), quote.toString());
+                    continue;
+                } else {
+                    Timber.d("Stock (%s) with Quote (%s) is valid.",
+                            stock.toString(), quote.toString());
+                }
 
                 float price = quote.getPrice().floatValue();
                 float change = quote.getChange().floatValue();
