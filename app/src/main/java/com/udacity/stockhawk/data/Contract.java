@@ -1,13 +1,11 @@
 package com.udacity.stockhawk.data;
 
-
 import android.net.Uri;
 import android.provider.BaseColumns;
 
 import com.google.common.collect.ImmutableList;
 
 public final class Contract {
-
     static final String AUTHORITY = "com.udacity.stockhawk";
     static final String PATH_QUOTE = "quote";
     static final String PATH_QUOTE_WITH_SYMBOL = "quote/*";
@@ -48,8 +46,5 @@ public final class Contract {
         static String getStockFromUri(Uri queryUri) {
             return queryUri.getLastPathSegment();
         }
-
-
     }
-
 }

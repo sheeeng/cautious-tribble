@@ -5,21 +5,18 @@
 
     <string name="pref_stocks_key">stocks</string>
 
-
     <string name="pref_display_mode_key">displayMode</string>
     <string name="pref_display_mode_default">@string/pref_display_mode_percentage_key</string>
 
-    <string name="pref_display_mode_absolute_key">absolute</string>
-    <string name="pref_display_mode_percentage_key">percentage</string>
+    <string name="pref_display_mode_absolute_key" translatable="false">absolute</string>
+    <string name="pref_display_mode_percentage_key" translatable="false">percentage</string>
 
     <string name="default_stocks_yahoo" translatable="false">YHOO</string>
     <string name="default_stocks_apple" translatable="false">AAPL</string>
     <string name="default_stocks_microsoft" translatable="false">MSFT</string>
     <string name="default_stocks_facebook" translatable="false">FB</string>
 
-
     <string name="action_change_units">@string/pref_display_mode_key</string>
-
 
     <string name="dialog_title">Add Stock</string>
     <string name="dialog_hint">Symbol (e.g. GOOG)</string>
@@ -32,12 +29,16 @@
     <string name="toast_stock_added_no_connectivity">Symbol %s added. Will refresh when network available.</string>
     <string name="toast_no_connectivity">Will refresh when network available.</string>
 
-
     <string name="default_error_message">Error message here.</string>
 
-    <string name="default_stock_ticker">GOOG</string>
-    <string name="default_stock_price">1000.00</string>
-    <string name="default_stock_change_percentage">100%</string>
-    <string name="title_activity_stock_details">StockDetailsActivity</string>
+    <string name="fab_content_description_stock_add">Add new stock symbol.</string>
+    <string name="tv_cd_stock_symbol">Stock Symbol</string>
+    <string name="tv_cd_stock_price">Stock Price</string>
+    <string name="tv_cd_stock_change">Stock Change</string>
 
+    <string name="default_stock_symbol" translatable="false">SYMB</string>
+    <string name="default_stock_price" translatable="false">42.24</string>
+    <string name="default_stock_change" translatable="false">42%</string>
+
+    <string name="title_activity_stock_details">StockDetailsActivity</string>
 </resources>
