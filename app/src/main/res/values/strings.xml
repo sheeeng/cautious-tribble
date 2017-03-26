@@ -31,7 +31,8 @@
 
     <string name="default_error_message">Error message here.</string>
 
-    <string name="fab_content_description_stock_add">Add new stock symbol.</string>
+    <string name="te_cd_stock_add">Enter stock symbol.</string>
+    <string name="fab_cd_stock_add">Add stock symbol.</string>
     <string name="tv_cd_stock_symbol">Stock Symbol</string>
     <string name="tv_cd_stock_price">Stock Price</string>
     <string name="tv_cd_stock_change">Stock Change</string>
