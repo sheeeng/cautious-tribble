@@ -12,6 +12,8 @@ import com.udacity.stockhawk.R;
 import com.udacity.stockhawk.ui.MainActivity;
 
 public class StockWidgetProvider extends AppWidgetProvider {
+    public static final String EXTRA_SYMBOL = "extra:symbol";
+
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         super.onUpdate(context, appWidgetManager, appWidgetIds);

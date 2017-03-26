@@ -11,6 +11,7 @@ import android.widget.RemoteViewsService;
 
 import com.udacity.stockhawk.R;
 import com.udacity.stockhawk.data.Contract;
+import com.udacity.stockhawk.ui.StockDetailsActivity;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -21,11 +22,6 @@ import java.util.Locale;
 import timber.log.Timber;
 
 public class StockWidgetService extends RemoteViewsService {
-    private List<ContentValues> mCvList = new ArrayList<>();
-    private DecimalFormat dollarFormat;
-    private DecimalFormat dollarFormatWithPlus;
-    private DecimalFormat percentageFormat;
-
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
         return new StockWidgetViewFactory(getApplicationContext());
@@ -33,8 +29,14 @@ public class StockWidgetService extends RemoteViewsService {
 
     private class StockWidgetViewFactory implements RemoteViewsFactory {
         private final Context mContext;
+        private DecimalFormat dollarFormat;
+        private DecimalFormat dollarFormatWithPlus;
+        private DecimalFormat percentageFormat;
+        private List<ContentValues> mCvList = new ArrayList<>();
 
-        void setFormat() {
+        public StockWidgetViewFactory(Context context) {
+            mContext = context;
+
             dollarFormat = (DecimalFormat) NumberFormat.getCurrencyInstance(Locale.US);
             dollarFormatWithPlus = (DecimalFormat) NumberFormat.getCurrencyInstance(Locale.US);
             dollarFormatWithPlus.setPositivePrefix("+$");
@@ -44,24 +46,18 @@ public class StockWidgetService extends RemoteViewsService {
             percentageFormat.setPositivePrefix("+");
         }
 
-        public StockWidgetViewFactory(Context context) {
-            mContext = context;
-            setFormat();
-        }
-
         @Override
         public void onCreate() {
             setData();
         }
 
         private void setData() {
+            mCvList.clear();
 
             long identity = Binder.clearCallingIdentity();
 
             try {
                 ContentResolver contentResolver = mContext.getContentResolver();
-
-                mCvList.clear();
 
                 Cursor cursor = contentResolver.query(
                         Contract.Quote.URI,
@@ -119,33 +115,46 @@ public class StockWidgetService extends RemoteViewsService {
                     mContext.getPackageName(),
                     R.layout.list_item_quote);
 
-            remoteViews.setTextViewText(
-                    R.id.symbol,
-                    cv.getAsString(Contract.Quote.COLUMN_SYMBOL));
+            String symbol = cv.getAsString(Contract.Quote.COLUMN_SYMBOL);
+            Timber.d("String.valueOf(symbol): %s", String.valueOf(symbol));
 
             remoteViews.setTextViewText(
-                    R.id.price,
-                    cv.getAsString(
-                            dollarFormat.format(
-                                    cv.getAsFloat(Contract.Quote.COLUMN_PRICE)
-                            )
+                    R.id.symbol,
+                    symbol);
+
+            remoteViews.setTextViewText(R.id.price,
+                    dollarFormat.format(
+                            cv.getAsFloat(
+                                    Contract.Quote.COLUMN_PRICE)
                     )
             );
 
             float absChange = cv.getAsFloat(Contract.Quote.COLUMN_ABSOLUTE_CHANGE);
+            Timber.d("String.valueOf(absChange): %s", String.valueOf(absChange));
             float perChange = cv.getAsFloat(Contract.Quote.COLUMN_PERCENTAGE_CHANGE);
+            Timber.d("String.valueOf(perChange): %s", String.valueOf(perChange));
 
             if (absChange > 0) {
-                remoteViews.setInt(R.id.change,
-                        "setBackgroundResources", R.drawable.percent_change_pill_green);
+                remoteViews.setInt(
+                        R.id.change,
+                        "setBackgroundResource",
+                        R.drawable.percent_change_pill_green);
             } else {
-                remoteViews.setInt(R.id.change,
-                        "setBackgroundResources", R.drawable.percent_change_pill_red);
+                remoteViews.setInt(
+                        R.id.change,
+                        "setBackgroundResource",
+                        R.drawable.percent_change_pill_red);
             }
 
+            String percentageChange = percentageFormat.format(perChange / 100);
+            Timber.d("String.valueOf(percentageChange): %s", String.valueOf(percentageChange));
             remoteViews.setTextViewText(
                     R.id.change,
-                    percentageFormat.format(perChange / 100));
+                    percentageChange);
+
+            Intent fillIntent = new Intent(mContext, StockDetailsActivity.class);
+            fillIntent.putExtra(StockWidgetProvider.EXTRA_SYMBOL, symbol);
+            remoteViews.setOnClickFillInIntent(R.id.list_item, fillIntent);
 
             return remoteViews;
         }

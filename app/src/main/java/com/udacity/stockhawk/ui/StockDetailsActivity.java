@@ -33,6 +33,8 @@ import butterknife.ButterKnife;
 
 public class StockDetailsActivity extends Activity {
 
+
+
     @BindView(R.id.tv_stock_details_symbol)
     TextView textViewSymbol;
 
