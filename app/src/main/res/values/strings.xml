@@ -42,4 +42,5 @@
     <string name="default_stock_change" translatable="false">42%</string>
 
     <string name="title_activity_stock_details">StockDetailsActivity</string>
+    <string name="widget_title">LOREMIPSUM</string>
 </resources>
