@@ -21,7 +21,7 @@ public class StockWidgetProvider extends AppWidgetProvider {
             PendingIntent pIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
             RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_initial);
-            remoteViews.setOnClickPendingIntent(R.id.widget_container, pIntent);
+            remoteViews.setOnClickPendingIntent(R.id.container, pIntent);
 
             Intent widgetIntent = new Intent(context, StockWidgetService .class);
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);

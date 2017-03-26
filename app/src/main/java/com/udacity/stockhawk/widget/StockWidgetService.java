@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Binder;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
@@ -16,6 +17,8 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import timber.log.Timber;
 
 public class StockWidgetService extends RemoteViewsService {
     private List<ContentValues> mCvList = new ArrayList<>();
@@ -52,34 +55,46 @@ public class StockWidgetService extends RemoteViewsService {
         }
 
         private void setData() {
-            ContentResolver contentResolver = mContext.getContentResolver();
 
-            mCvList.clear();
+            long identity = Binder.clearCallingIdentity();
 
-            Cursor cursor = contentResolver.query(
-                    Contract.Quote.URI,
-                    null,
-                    null,
-                    null,
-                    null
-            );
+            try {
+                ContentResolver contentResolver = mContext.getContentResolver();
 
-            while (cursor.moveToNext()) {
-                String symbol = cursor.getString(cursor.getColumnIndex(Contract.Quote.COLUMN_SYMBOL));
-                float price = cursor.getFloat(cursor.getColumnIndex(Contract.Quote.COLUMN_PRICE));
-                float absoluteChange = cursor.getFloat(cursor.getColumnIndex(Contract.Quote.COLUMN_ABSOLUTE_CHANGE));
-                float percentageChange = cursor.getFloat(cursor.getColumnIndex(Contract.Quote.COLUMN_PERCENTAGE_CHANGE));
+                mCvList.clear();
 
-                ContentValues cv = new ContentValues();
-                cv.put(Contract.Quote.COLUMN_SYMBOL, symbol);
-                cv.put(Contract.Quote.COLUMN_PRICE, price);
-                cv.put(Contract.Quote.COLUMN_ABSOLUTE_CHANGE, absoluteChange);
-                cv.put(Contract.Quote.COLUMN_PERCENTAGE_CHANGE, percentageChange);
+                Cursor cursor = contentResolver.query(
+                        Contract.Quote.URI,
+                        null,
+                        null,
+                        null,
+                        null
+                );
 
-                mCvList.add(cv);
+                while (cursor.moveToNext()) {
+                    String symbol = cursor.getString(cursor.getColumnIndex(Contract.Quote.COLUMN_SYMBOL));
+                    float price = cursor.getFloat(cursor.getColumnIndex(Contract.Quote.COLUMN_PRICE));
+                    float absoluteChange = cursor.getFloat(cursor.getColumnIndex(Contract.Quote.COLUMN_ABSOLUTE_CHANGE));
+                    float percentageChange = cursor.getFloat(cursor.getColumnIndex(Contract.Quote.COLUMN_PERCENTAGE_CHANGE));
+
+                    ContentValues cv = new ContentValues();
+
+                    cv.put(Contract.Quote.COLUMN_SYMBOL, symbol);
+                    cv.put(Contract.Quote.COLUMN_PRICE, price);
+                    cv.put(Contract.Quote.COLUMN_ABSOLUTE_CHANGE, absoluteChange);
+                    cv.put(Contract.Quote.COLUMN_PERCENTAGE_CHANGE, percentageChange);
+
+                    Timber.d(symbol);
+                    Timber.d(String.valueOf(price));
+
+                    mCvList.add(cv);
+                }
+
+                cursor.close();
             }
-
-            cursor.close();
+            finally {
+                Binder.restoreCallingIdentity(identity);
+            }
         }
 
         @Override
