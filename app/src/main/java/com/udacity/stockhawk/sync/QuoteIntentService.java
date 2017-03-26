@@ -7,7 +7,6 @@ import timber.log.Timber;
 
 
 public class QuoteIntentService extends IntentService {
-
     public QuoteIntentService() {
         super(QuoteIntentService.class.getSimpleName());
     }

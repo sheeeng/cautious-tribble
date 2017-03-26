@@ -43,7 +43,6 @@ public final class QuoteSyncJob {
     }
 
     static void getQuotes(final Context context) {
-
         Timber.d("Running sync job");
 
         Calendar from = Calendar.getInstance();
