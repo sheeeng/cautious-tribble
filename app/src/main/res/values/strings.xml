@@ -42,4 +42,6 @@
     <string name="default_stock_change" translatable="false">42%</string>
 
     <string name="title_activity_stock_details">StockDetailsActivity</string>
+    <string name="invalid_stock_prepend">Invalid stock (</string>
+    <string name="invalid_stock_append">) entered.</string>
 </resources>
