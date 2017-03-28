@@ -71,12 +71,33 @@ public final class QuoteSyncJob {
             ArrayList<ContentValues> quoteCVs = new ArrayList<>();
 
             while (iterator.hasNext()) {
-                String symbol = iterator.next();
+                final String symbol = iterator.next();
 
                 final Stock stock = quotes.get(symbol);
+                if (stock == null) {
+                    Timber.d("Stock (%s) is invalid!", symbol.toString());
+                    new Handler(Looper.getMainLooper()).post(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    // THIS IS MAIN THREAD!
+                                    Toast.makeText(
+                                            context,
+                                            context.getString(R.string.invalid_stock_prepend)
+                                                    + symbol.toString()
+                                                    + context.getString(R.string.invalid_stock_append),
+                                            Toast.LENGTH_LONG).show();
+                                }
+                            }
+                    );
+                    continue;
+                } else {
+                    Timber.d("Stock (%s) is valid.", stock.toString());
+                }
+
                 StockQuote quote = stock.getQuote();
 
-                if (stock.getQuote().getPrice() == null) {
+                if (quote == null) {
                     new Handler(Looper.getMainLooper()).post(
                             new Runnable() {
                                 @Override
@@ -91,12 +112,10 @@ public final class QuoteSyncJob {
                                 }
                             }
                     );
-                    Timber.d("Stock (%s) with Quote (%s) is invalid!",
-                            stock.toString(), quote.toString());
+                    Timber.d("Quote (%s) is invalid!", quote.toString());
                     continue;
                 } else {
-                    Timber.d("Stock (%s) with Quote (%s) is valid.",
-                            stock.toString(), quote.toString());
+                    Timber.d("Quote (%s) is valid.", quote.toString());
                 }
 
                 float price = quote.getPrice().floatValue();
