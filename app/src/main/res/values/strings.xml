@@ -44,4 +44,8 @@
     <string name="title_activity_stock_details">StockDetailsActivity</string>
     <string name="invalid_stock_prepend">Invalid stock (</string>
     <string name="invalid_stock_append">) entered.</string>
+    <string name="stock_is_invalid">Stock (%s) is invalid!</string>
+    <string name="stock_is_valid">Stock (%s) is valid!</string>
+    <string name="quote_is_invalid">Quote (%s) is invalid!</string>
+    <string name="quote_is_valid">Quote (%s) is valid!</string>
 </resources>

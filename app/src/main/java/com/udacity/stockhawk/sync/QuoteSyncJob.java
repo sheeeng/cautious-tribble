@@ -75,7 +75,7 @@ public final class QuoteSyncJob {
 
                 final Stock stock = quotes.get(symbol);
                 if (stock == null) {
-                    Timber.d("Stock (%s) is invalid!", symbol.toString());
+                    Timber.d(context.getString(R.string.stock_is_invalid), symbol.toString());
                     new Handler(Looper.getMainLooper()).post(
                             new Runnable() {
                                 @Override
@@ -92,7 +92,7 @@ public final class QuoteSyncJob {
                     );
                     continue;
                 } else {
-                    Timber.d("Stock (%s) is valid.", stock.toString());
+                    Timber.d(context.getString(R.string.stock_is_valid), stock.toString());
                 }
 
                 StockQuote quote = stock.getQuote();
@@ -112,10 +112,10 @@ public final class QuoteSyncJob {
                                 }
                             }
                     );
-                    Timber.d("Quote (%s) is invalid!", quote.toString());
+                    Timber.d(context.getString(R.string.quote_is_invalid), quote.toString());
                     continue;
                 } else {
-                    Timber.d("Quote (%s) is valid.", quote.toString());
+                    Timber.d(context.getString(R.string.quote_is_valid), quote.toString());
                 }
 
                 float price = quote.getPrice().floatValue();
