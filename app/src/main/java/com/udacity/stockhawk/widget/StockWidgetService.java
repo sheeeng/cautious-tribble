@@ -80,8 +80,7 @@ public class StockWidgetService extends RemoteViewsService {
                     cv.put(Contract.Quote.COLUMN_ABSOLUTE_CHANGE, absoluteChange);
                     cv.put(Contract.Quote.COLUMN_PERCENTAGE_CHANGE, percentageChange);
 
-                    Timber.d(symbol);
-                    Timber.d(String.valueOf(price));
+                    Timber.d(symbol + " - "+ String.valueOf(price));
 
                     mCvList.add(cv);
                 }

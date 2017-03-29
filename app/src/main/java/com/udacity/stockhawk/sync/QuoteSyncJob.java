@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.widget.Toast;
 
+import com.udacity.stockhawk.DeleteStockTask;
 import com.udacity.stockhawk.R;
 import com.udacity.stockhawk.data.Contract;
 import com.udacity.stockhawk.data.PrefUtils;
@@ -35,8 +36,8 @@ import yahoofinance.quotes.stock.StockQuote;
 public final class QuoteSyncJob {
     private static final int ONE_OFF_ID = 2;
     private static final String ACTION_DATA_UPDATED = "com.udacity.stockhawk.ACTION_DATA_UPDATED";
-    private static final int PERIOD = 300000;
-    private static final int INITIAL_BACKOFF = 10000;
+    private static final int PERIOD = 1000;
+    private static final int INITIAL_BACKOFF = 1000;
     private static final int PERIODIC_ID = 1;
     private static final int YEARS_OF_HISTORY = 2;
 
@@ -57,16 +58,17 @@ public final class QuoteSyncJob {
             stockCopy.addAll(stockPref);
             String[] stockArray = stockPref.toArray(new String[stockPref.size()]);
 
-            Timber.d(stockCopy.toString());
+            Timber.d("stockPref.toString(): " + stockPref.toString());
 
             if (stockArray.length == 0) {
+                Timber.d("stockArray.length == 0");
                 return;
             }
 
             Map<String, Stock> quotes = YahooFinance.get(stockArray);
             Iterator<String> iterator = stockCopy.iterator();
 
-            Timber.d(quotes.toString());
+            Timber.d("quotes.toString():" + quotes.toString());
 
             ArrayList<ContentValues> quoteCVs = new ArrayList<>();
 
@@ -74,7 +76,7 @@ public final class QuoteSyncJob {
                 final String symbol = iterator.next();
 
                 final Stock stock = quotes.get(symbol);
-                if (stock == null) {
+                if (stock == null || stock.getName() == null) {
                     Timber.d(context.getString(R.string.stock_is_invalid), symbol.toString());
                     new Handler(Looper.getMainLooper()).post(
                             new Runnable() {
@@ -90,6 +92,10 @@ public final class QuoteSyncJob {
                                 }
                             }
                     );
+                    PrefUtils.removeStock(context, symbol);
+
+                    DeleteStockTask deleteSymbolFromPrefTask = new DeleteStockTask(context);
+                    deleteSymbolFromPrefTask.execute(symbol);
                     continue;
                 } else {
                     Timber.d(context.getString(R.string.stock_is_valid), stock.toString());
@@ -97,7 +103,7 @@ public final class QuoteSyncJob {
 
                 StockQuote quote = stock.getQuote();
 
-                if (quote == null) {
+                if (quote == null || quote.getPrice() == null) {
                     new Handler(Looper.getMainLooper()).post(
                             new Runnable() {
                                 @Override
@@ -146,6 +152,8 @@ public final class QuoteSyncJob {
                 quoteCVs.add(quoteCV);
             }
 
+            //Timber.d("quoteCVs.toString(): " + quoteCVs.toString());
+
             context.getContentResolver()
                     .bulkInsert(
                             Contract.Quote.URI,
@@ -164,7 +172,7 @@ public final class QuoteSyncJob {
 
         JobInfo.Builder builder = new JobInfo.Builder(PERIODIC_ID, new ComponentName(context, QuoteJobService.class));
 
-        builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+        builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
                 .setPeriodic(PERIOD)
                 .setBackoffCriteria(INITIAL_BACKOFF, JobInfo.BACKOFF_POLICY_EXPONENTIAL);
 
@@ -188,7 +196,7 @@ public final class QuoteSyncJob {
         } else {
             JobInfo.Builder builder = new JobInfo.Builder(ONE_OFF_ID, new ComponentName(context, QuoteJobService.class));
 
-            builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+            builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
                     .setBackoffCriteria(INITIAL_BACKOFF, JobInfo.BACKOFF_POLICY_EXPONENTIAL);
 
             JobScheduler scheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);

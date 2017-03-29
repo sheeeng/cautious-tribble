@@ -1,6 +1,8 @@
 package com.udacity.stockhawk.data;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
@@ -49,6 +51,7 @@ public final class PrefUtils {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putStringSet(key, stocks);
         editor.apply();
+        editor.commit();
     }
 
     public static void addStock(Context context, String symbol) {
